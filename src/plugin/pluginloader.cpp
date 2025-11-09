@@ -3,6 +3,18 @@
 #include "pluginloader.h"
 using namespace albert;
 
-thread_local PluginLoader *PluginLoader::current_loader;
+namespace {
+    thread_local PluginLoader *g_current_loader = nullptr;
+}
+
+PluginLoader *PluginLoader::current_loader()
+{
+    return g_current_loader;
+}
+
+void PluginLoader::set_current_loader(PluginLoader *loader)
+{
+    g_current_loader = loader;
+}
 
 PluginLoader::~PluginLoader() = default;

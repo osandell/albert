@@ -36,15 +36,22 @@ set(QT_DEFAULT_MAJOR_VERSION 6)
 set(BUILD_SHARED_LIBS FALSE)
 set(QHOTKEY_INSTALL OFF CACHE BOOL "" FORCE)
 add_subdirectory(lib/QHotkey EXCLUDE_FROM_ALL)
-target_compile_options(qhotkey
-    PRIVATE
-        -Wno-gnu-zero-variadic-macro-arguments
-        -Wno-unused-parameter
-        -Wno-shadow
-        -Wno-elaborated-enum-base
-        -Wno-deprecated-declarations
-        -Wno-nullability-completeness
-)
+if(MSVC)
+    target_compile_options(qhotkey
+        PRIVATE
+            /wd4996  # deprecated declarations
+    )
+else()
+    target_compile_options(qhotkey
+        PRIVATE
+            -Wno-gnu-zero-variadic-macro-arguments
+            -Wno-unused-parameter
+            -Wno-shadow
+            -Wno-elaborated-enum-base
+            -Wno-deprecated-declarations
+            -Wno-nullability-completeness
+    )
+endif()
 
 
 ### Lib  ######################################################################
@@ -334,27 +341,36 @@ set_target_properties(${TARGET_LIB} PROPERTIES
     AUTORCC ON
 )
 
-target_compile_options(${TARGET_LIB}
-    PUBLIC
-        #-Werror
-        -Wall
-        -Wextra
-        -Wpedantic
+if(MSVC)
+    target_compile_options(${TARGET_LIB}
+        PUBLIC
+            /W4
+            /wd4996  # deprecated declarations
+    )
+else()
+    target_compile_options(${TARGET_LIB}
+        PUBLIC
+            #-Werror
+            -Wall
+            -Wextra
+            -Wpedantic
 
-        # warnings that should be errors
-        -Werror=return-type  # silently buils but crashes at runtime
-        -Werror=float-conversion  # Implicit cast may loose precision (e.g. match scores)
+            # warnings that should be errors
+            -Werror=return-type  # silently buils but crashes at runtime
+            -Werror=float-conversion  # Implicit cast may loose precision (e.g. match scores)
 
-        -Wno-deprecated-enum-enum-conversion  # bitwise operation between different enumeration types used by drawText
-        -Wno-attributes  # mute visibility warnings
+            -Wno-deprecated-enum-enum-conversion  # bitwise operation between different enumeration types used by drawText
+            -Wno-attributes  # mute visibility warnings
 
-        # -Wconversion
-        # -Weffc++
-        -Winline
-        -Wmissing-field-initializers
-        -Wshadow
-        -Wstrict-aliasing
-        -Winvalid-pch
+            # -Wconversion
+            # -Weffc++
+            -Winline
+            -Wmissing-field-initializers
+            -Wshadow
+            -Wstrict-aliasing
+            -Winvalid-pch
+    )
+endif()
 
         # Use this from time to time
         # -Weverything
@@ -365,7 +381,6 @@ target_compile_options(${TARGET_LIB}
 
         # ??
         # -Wl,-undefined
-)
 
 
 ### Internationalization

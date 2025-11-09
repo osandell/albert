@@ -3,6 +3,7 @@
 #pragma once
 #include <QObject>
 #include <memory>
+#include <albert/export.h>
 class PluginRegistry;
 class QueryEngine;
 class QHotkey;
@@ -10,7 +11,7 @@ class Telemetry;
 namespace albert {
 namespace detail { class Frontend; }
 class ExtensionRegistry;
-int run(int, char**);
+ALBERT_EXPORT int run(int, char**);
 }
 
 

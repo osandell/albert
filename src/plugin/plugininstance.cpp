@@ -26,7 +26,7 @@ public:
 
 PluginInstance::PluginInstance():
     d(new Private{
-        .loader = PluginLoader::current_loader,
+        .loader = PluginLoader::current_loader(),
     })
 {}
 

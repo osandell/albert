@@ -34,7 +34,11 @@ void util::open(const QUrl &url)
 
 void util::open(const QString &path) { open(QUrl::fromLocalFile(path)); }
 
-void util::open(const filesystem::path &path) { open(QString::fromLocal8Bit(path.native())); }
+void util::open(const filesystem::path &path) { 
+    auto u8str = path.u8string();
+    std::string utf8_path(reinterpret_cast<const char*>(u8str.data()), u8str.size());
+    open(QString::fromUtf8(utf8_path.c_str(), static_cast<int>(utf8_path.length())));
+}
 
 
 void util::setClipboardText(const QString &text)
@@ -55,6 +59,9 @@ static bool checkPasteSupport()
         WARN << "xdotool is available but but session type is not x11. "
                 "Paste will work for X11 windows only.";
     return have_paste_support;
+#else
+    // Windows - paste support not implemented
+    return false;
 #endif
 }
 

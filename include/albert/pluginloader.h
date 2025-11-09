@@ -38,7 +38,8 @@ public:
     /// This avoids injection mechanisms and therefore reduces boilerplate for \ref PluginInstance
     /// implementations. Implementations have to set this before calling the constructor of the
     /// plugin instance.
-    static thread_local PluginLoader *current_loader;
+    static PluginLoader *current_loader();
+    static void set_current_loader(PluginLoader *loader);
 
 signals:
 

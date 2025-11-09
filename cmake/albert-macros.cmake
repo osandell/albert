@@ -167,31 +167,43 @@ macro(albert_plugin_i18n)
     # install(FILES ${QM_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/albert/i18n")
 
     # Prepare a list of translations for the metadata
-    foreach(TS_FILE ${TS_FILES})
-        get_filename_component(BASENAME ${TS_FILE} NAME_WLE)
+    find_program(XMLLINT_EXECUTABLE xmllint)
+    if(XMLLINT_EXECUTABLE)
+        foreach(TS_FILE ${TS_FILES})
+            get_filename_component(BASENAME ${TS_FILE} NAME_WLE)
 
-        if (NOT ${BASENAME} STREQUAL ${PROJECT_NAME})
+            if (NOT ${BASENAME} STREQUAL ${PROJECT_NAME})
 
-            execute_process(
-                COMMAND xmllint --xpath "count(//translation[not(@type='unfinished')])" ${TS_FILE}
-                OUTPUT_VARIABLE FINISHED_COUNT
-                COMMAND_ERROR_IS_FATAL ANY
-                OUTPUT_STRIP_TRAILING_WHITESPACE
-            )
+                execute_process(
+                    COMMAND ${XMLLINT_EXECUTABLE} --xpath "count(//translation[not(@type='unfinished')])" ${TS_FILE}
+                    OUTPUT_VARIABLE FINISHED_COUNT
+                    COMMAND_ERROR_IS_FATAL ANY
+                    OUTPUT_STRIP_TRAILING_WHITESPACE
+                )
 
-            execute_process(
-                COMMAND xmllint --xpath "count(//translation)" ${TS_FILE}
-                OUTPUT_VARIABLE TOTAL_COUNT
-                COMMAND_ERROR_IS_FATAL ANY
-                OUTPUT_STRIP_TRAILING_WHITESPACE
-            )
+                execute_process(
+                    COMMAND ${XMLLINT_EXECUTABLE} --xpath "count(//translation)" ${TS_FILE}
+                    OUTPUT_VARIABLE TOTAL_COUNT
+                    COMMAND_ERROR_IS_FATAL ANY
+                    OUTPUT_STRIP_TRAILING_WHITESPACE
+                )
 
-            string(REPLACE "${PROJECT_NAME}_" "" LANGUAGE_CODE ${BASENAME})
+                string(REPLACE "${PROJECT_NAME}_" "" LANGUAGE_CODE ${BASENAME})
 
-            list(APPEND TRANSLATIONS "${LANGUAGE_CODE} (${FINISHED_COUNT}/${TOTAL_COUNT})")
+                list(APPEND TRANSLATIONS "${LANGUAGE_CODE} (${FINISHED_COUNT}/${TOTAL_COUNT})")
 
-        endif()
-    endforeach()
+            endif()
+        endforeach()
+    else()
+        # xmllint not available, skip translation statistics
+        foreach(TS_FILE ${TS_FILES})
+            get_filename_component(BASENAME ${TS_FILE} NAME_WLE)
+            if (NOT ${BASENAME} STREQUAL ${PROJECT_NAME})
+                string(REPLACE "${PROJECT_NAME}_" "" LANGUAGE_CODE ${BASENAME})
+                list(APPEND TRANSLATIONS "${LANGUAGE_CODE}")
+            endif()
+        endforeach()
+    endif()
 endmacro()
 
 macro(albert_plugin_generate_metadata)

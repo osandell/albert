@@ -73,8 +73,9 @@ public:
 };
 
 
-OAuth2::OAuth2() : d(make_unique<Private>(this))
+OAuth2::OAuth2() : d(std::make_unique<Private>())
 {
+    d->q = this;
     connect(&d->token_refresh_timer, &QTimer::timeout, this, &OAuth2::updateTokens);
     d->token_refresh_timer.setSingleShot(true);
 }

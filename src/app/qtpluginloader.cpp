@@ -172,7 +172,7 @@ void QtPluginLoader::load()
             QCoreApplication::installTranslator(translator.get());  // Not threadsafe
 
         auto tp_c = system_clock::now();
-        current_loader = this;
+        PluginLoader::set_current_loader(this);
         if (auto *instance = loader_.instance();
             !instance)
             throw runtime_error("Plugin instance is null.");
