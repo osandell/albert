@@ -80,7 +80,7 @@ void Download::start()
                     d->error = "File already exists.";
 
                 else if (auto dir = info.dir();
-                         !dir.mkpath("."))
+                         !QDir().mkpath(dir.absolutePath()))
                     d->error = "Cannot create parent directory.";
 
                 if (QSaveFile file(d->path); file.open(QIODevice::WriteOnly))
