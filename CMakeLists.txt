@@ -205,6 +205,7 @@ set(LIB_SRC
 if (WIN32)
     list(APPEND LIB_SRC
         src/platform/win/signalhandler.cpp
+        src/platform/win/platform.cpp
     )
 elseif (APPLE)
     list(APPEND LIB_SRC

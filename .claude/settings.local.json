@@ -3,7 +3,17 @@
     "allow": [
       "Bash(cmd /c '\"\"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\Build\\vcvarsall.bat\"\" x64 && \"\"C:\\portableapps\\ninja\\ninja.exe\"\" -C build')",
       "Bash(cmd.exe /c \"\"\"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\Build\\vcvarsall.bat\"\" x64 && \"\"C:\\portableapps\\ninja\\ninja.exe\"\" -C build\")",
-      "Bash(powershell.exe -Command \"& ''C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\Build\\vcvarsall.bat'' x64; & ''C:\\portableapps\\ninja\\ninja.exe'' -C build\")"
+      "Bash(powershell.exe -Command \"& ''C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\Build\\vcvarsall.bat'' x64; & ''C:\\portableapps\\ninja\\ninja.exe'' -C build\")",
+      "Bash(dir:*)",
+      "Bash(nul)",
+      "Bash(cmake:*)",
+      "Bash(where:*)",
+      "Bash(C:portableappsninjaninja.exe --version)",
+      "Bash(powershell.exe -Command \"Get-Command cmake -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source\")",
+      "Bash(powershell.exe -Command \"Test-Path ''C:\\portableapps\\ninja\\ninja.exe''\")",
+      "Bash(powershell.exe -Command \"Get-Command qt6 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source\")",
+      "Bash(powershell.exe -Command:*)",
+      "Bash(cmd.exe /c:*)"
     ],
     "deny": [],
     "ask": []
