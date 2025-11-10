@@ -15,6 +15,19 @@ QtPluginProvider::QtPluginProvider(QStringList paths)
     paths << "../../../../lib";  // ./bin/albert.app/Contents/MacOS/
 #elif defined(Q_OS_UNIX)
     paths << "../lib";
+#elif defined(Q_OS_WIN)
+    // On Windows, add default plugin paths relative to executable
+    // Look in ../plugins/<plugin_name>/ for development builds
+    QDir appDir(QCoreApplication::applicationDirPath());
+    QStringList devPaths;
+    devPaths << appDir.absoluteFilePath("../plugins");
+    // Also check if plugins are in bin directory (for installed builds)
+    devPaths << appDir.absolutePath();
+    for (const QString& p : devPaths) {
+        if (QDir(p).exists()) {
+            paths << p;
+        }
+    }
 #endif
 
     QStringList install_paths;
@@ -46,7 +59,12 @@ QtPluginProvider::QtPluginProvider(QStringList paths)
     INFO << "Searching native plugins in" << unique_canonical_paths.join(", ");
     for (const auto &path : unique_canonical_paths)
     {
-        QDirIterator dirIterator(path, QDir::Files);
+        // Search recursively in subdirectories for Windows development builds
+        QDirIterator::IteratorFlags flags = QDirIterator::NoIteratorFlags;
+#if defined(Q_OS_WIN)
+        flags |= QDirIterator::Subdirectories;
+#endif
+        QDirIterator dirIterator(path, QDir::Files, flags);
         while (dirIterator.hasNext()) {
             try {
                 auto pl = make_unique<QtPluginLoader>(QFileInfo(dirIterator.next()).absoluteFilePath());

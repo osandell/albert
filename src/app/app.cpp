@@ -614,6 +614,17 @@ int ALBERT_EXPORT run(int argc, char **argv)
     // Initialize Qt application
 
     QApplication qapp(argc, argv);
+    
+    // Initialize log file after QApplication is created
+    initializeLogFile();
+    
+    // Log diagnostic information
+    qInfo() << "=== Albert Startup Diagnostics ===";
+    qInfo() << "Qt Version:" << QT_VERSION_STR;
+    qInfo() << "Qt Runtime Version:" << qVersion();
+    qInfo() << "Application Dir Path:" << QCoreApplication::applicationDirPath();
+    qInfo() << "Library Paths:" << QCoreApplication::libraryPaths();
+    qInfo() << "Executable Path:" << QCoreApplication::applicationFilePath();
     QApplication::setApplicationName("albert");
     QApplication::setApplicationDisplayName("Albert");
     QApplication::setApplicationVersion(ALBERT_VERSION_STRING);
