@@ -16,7 +16,8 @@
       "Bash(cmd.exe /c:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(del nul)"
+      "Bash(del nul)",
+      "Bash(rm:*)"
     ],
     "deny": [],
     "ask": []
