@@ -345,7 +345,23 @@ void GlobalQuery::handleTriggerQuery(Query &)
     tp = system_clock::now();
     auto begin = ::begin(rank_items);
     auto end = ::end(rank_items);
-    auto mid = begin + 20;
+    
+    if (begin == end)
+    {
+        // Empty vector, nothing to sort
+        auto d_s = duration_cast<milliseconds>(system_clock::now()-tp).count();
+        qCDebug(timeCat,).noquote() << QStringLiteral("\x1b[38;5;33m│ Handling│  Sorting│ Count│\x1b[0m");
+        qCDebug(timeCat,).noquote()
+            << QStringLiteral("\x1b[38;5;33m│%1 ms│%2 ms│%3│ #%4 GLOBAL '%5'\x1b[0m")
+                   .arg(d_h, 6)
+                   .arg(d_s, 6)
+                   .arg(rank_items.size(), 6)
+                   .arg(query_id)
+                   .arg(string_);
+        return;
+    }
+
+    auto mid = (rank_items.size() > 20) ? begin + 20 : end;
 
     // Partially sort the visible items for fast response times
     if (mid < end)

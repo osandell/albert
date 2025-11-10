@@ -285,7 +285,7 @@ void ItemIndex::setItems(vector<IndexItem> &&index_items)
         for (Position p = 0; p < (Position)words.size(); ++p)
         {
             // Add word to string mapping.
-            word_index_[words[p]].occurrences.emplace_back(new_index.strings.size() - 1, p);
+            word_index_[words[p]].occurrences.emplace_back((Index)(new_index.strings.size() - 1), p);
 
             // Store the maximal match length for scoring
             string_index_item.max_match_len += words[p].size();

@@ -113,7 +113,13 @@ public:
 
 
 App::Private::Private(const QStringList &additional_plugin_paths, bool load_enabled):
-    original_path_entries(qEnvironmentVariable("PATH").split(u':', Qt::SkipEmptyParts)),
+    original_path_entries(qEnvironmentVariable("PATH").split(
+#ifdef Q_OS_WIN
+        u';'
+#else
+        u':'
+#endif
+        , Qt::SkipEmptyParts)),
     plugin_registry(extension_registry, load_enabled),
     plugin_provider(additional_plugin_paths),
     query_engine(extension_registry),
@@ -209,12 +215,26 @@ void App::Private::initTrayIcon()
     connect(action, &QAction::triggered, [] { albert::quit(); });
 
     // icon
-
-    auto icon = QIcon::fromTheme("albert-tray");
+    // On Windows, QIcon::fromTheme doesn't work, so use resource file directly
+    QIcon icon;
+#ifdef Q_OS_WIN
+    // Try loading directly from resource file
+    icon = QIcon(QStringLiteral(":/icons/fallback/scalable/albert-tray.svg"));
+    // If that fails, try using makeImageIcon
+    if (icon.isNull()) {
+        icon = qIcon(makeImageIcon(QStringLiteral(":/icons/fallback/scalable/albert-tray.svg")));
+    }
+#else
+    icon = qIcon(makeThemeIcon("albert-tray"));
     icon.setIsMask(true);
+#endif
 
     tray_icon = make_unique<QSystemTrayIcon>();
-    tray_icon->setIcon(icon);
+    if (!icon.isNull()) {
+        tray_icon->setIcon(icon);
+    } else {
+        WARN << "Failed to load tray icon from resource";
+    }
     tray_icon->setContextMenu(tray_menu.get());
     tray_icon->setVisible(true);
 
@@ -233,7 +253,13 @@ void App::Private::initPathVariable(const QSettings &settings)
 {
     additional_path_entries = settings.value(CFG_ADDITIONAL_PATH_ENTRIES).toStringList();
     auto effective_path_entries = QStringList() << additional_path_entries << original_path_entries;
-    auto new_path = effective_path_entries.join(u':').toUtf8();
+    auto new_path = effective_path_entries.join(
+#ifdef Q_OS_WIN
+        u';'
+#else
+        u':'
+#endif
+    ).toUtf8();
     qputenv("PATH", new_path);
     DEBG << "Effective PATH: " << new_path;
 }
