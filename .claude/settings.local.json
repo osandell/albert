@@ -17,7 +17,11 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(del nul)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(git remote set-url:*)",
+      "Bash(git push:*)",
+      "Bash(ssh:*)",
+      "Bash(GIT_SSH_COMMAND=\"ssh -v -i /c/Users/Olof.Sandell/.ssh/id_ed25519\" git push:*)"
     ],
     "deny": [],
     "ask": []
