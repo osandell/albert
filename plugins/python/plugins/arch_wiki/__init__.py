@@ -1,0 +1,90 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2024 Manuel Schneider
+
+import json
+from pathlib import Path
+from time import sleep
+from urllib import request, parse
+
+from albert import *
+
+md_iid = "4.0"
+md_version = "2.1.1"
+md_name = "Arch Linux Wiki"
+md_description = "Search Arch Linux Wiki articles"
+md_license = "MIT"
+md_url = "https://github.com/albertlauncher/albert-plugin-python-arch-wiki"
+md_authors = ["@ManuelSchneid3r"]
+md_maintainers = ["@ManuelSchneid3r"]
+
+
+class Plugin(PluginInstance, TriggerQueryHandler):
+
+    baseurl = 'https://wiki.archlinux.org/api.php'
+    search_url = "https://wiki.archlinux.org/index.php?search=%s"
+    user_agent = "org.albert.extension.python.archwiki"
+
+    def __init__(self):
+        PluginInstance.__init__(self)
+        TriggerQueryHandler.__init__(self)
+
+    def defaultTrigger(self):
+        return 'awiki '
+
+    @staticmethod
+    def makeIcon():
+        return makeImageIcon(Path(__file__).parent / "arch.svg")
+
+    def handleTriggerQuery(self, query):
+        stripped = query.string.strip()
+        if stripped:
+
+            # avoid rate limiting
+            for _ in range(50):
+                sleep(0.01)
+                if not query.isValid:
+                    return
+
+            results = []
+
+            params = {
+                'action': 'opensearch',
+                'search': stripped,
+                'limit': "max",
+                'redirects': 'resolve',
+                'utf8': 1,
+                'format': 'json'
+            }
+            get_url = "%s?%s" % (self.baseurl, parse.urlencode(params))
+            req = request.Request(get_url, headers={'User-Agent': self.user_agent})
+
+            with request.urlopen(req) as response:
+                data = json.loads(response.read().decode())
+                for i in range(0, len(data[1])):
+                    title = data[1][i]
+                    summary = data[2][i]
+                    url = data[3][i]
+
+                    results.append(StandardItem(id=self.id(),
+                                                text=title,
+                                                subtext=summary if summary else url,
+                                                icon_factory=self.makeIcon,
+                                                actions=[
+                                                    Action("open", "Open article", lambda u=url: openUrl(u)),
+                                                    Action("copy", "Copy URL", lambda u=url: setClipboardText(u))
+                                                ]))
+            if results:
+                query.add(results)
+            else:
+                query.add(StandardItem(id=self.id(),
+                                       text="Search '%s'" % query.string,
+                                       subtext="No results. Start online search on Arch Wiki",
+                                       icon_factory=self.makeIcon,
+                                       actions=[Action("search", "Open search",
+                                                       lambda s=query.string: openUrl(self.search_url % s))]))
+
+        else:
+            query.add(StandardItem(id=self.id(),
+                                   text=md_name,
+                                   icon_factory=self.makeIcon,
+                                   subtext="Enter a query to search on the Arch Wiki"))
