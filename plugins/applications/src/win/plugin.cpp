@@ -130,10 +130,46 @@ Plugin::Plugin()
             bool isWindowsApps = dir.contains(u"WindowsApps"_s, Qt::CaseInsensitive);
             
             QStringList filters;
+            QMap<QString, QStringList> validExes; // For WindowsApps: package dir -> list of valid exe names
+            
             if (isWindowsApps)
             {
+                // For WindowsApps, we need to filter to only main app executables
+                // Parse AppxManifest.xml files to find registered applications
+                QDirIterator manifestIt(dir, QStringList() << u"AppxManifest.xml"_s, 
+                                       QDir::Files, QDirIterator::Subdirectories);
+                
+                while (manifestIt.hasNext())
+                {
+                    QString manifestPath = manifestIt.next();
+                    QFile manifestFile(manifestPath);
+                    if (manifestFile.open(QIODevice::ReadOnly | QIODevice::Text))
+                    {
+                        QByteArray data = manifestFile.readAll();
+                        QString content = QString::fromUtf8(data);
+                        
+                        // Extract Executable attribute from Application elements
+                        QRegularExpression exeRegex(uR"(<Application[^>]*Executable=["']([^"']+)["'])"_s);
+                        QRegularExpressionMatchIterator matches = exeRegex.globalMatch(content);
+                        
+                        QStringList exeList;
+                        while (matches.hasNext())
+                        {
+                            QRegularExpressionMatch match = matches.next();
+                            QString exePath = match.captured(1);
+                            // Convert to just filename for easier matching
+                            exeList << QFileInfo(exePath).fileName();
+                        }
+                        
+                        if (!exeList.isEmpty())
+                        {
+                            QString packageDir = QFileInfo(manifestPath).dir().absolutePath();
+                            validExes[packageDir] = exeList;
+                        }
+                    }
+                }
+                
                 // In WindowsApps, scan for .exe files in subdirectories only
-                // Skip root-level symlinks (they're duplicates of the actual executables)
                 filters << u"*.exe"_s;
             }
             else
@@ -156,8 +192,7 @@ Plugin::Plugin()
                 auto path = it.next();
                 QFileInfo fi(path);
                 
-                // For WindowsApps, skip root-level files (they're usually symlinks)
-                // Only include files in subdirectories (actual app packages)
+                // For WindowsApps, skip root-level files and symlinks from LocalAppData
                 if (isWindowsApps)
                 {
                     QString relativePath = QDir(dir).relativeFilePath(path);
@@ -167,6 +202,29 @@ Plugin::Plugin()
                         DEBG << QStringLiteral("Skipping root-level symlink: '%1'").arg(path);
                         continue;
                     }
+                    
+                    // Skip LocalAppData WindowsApps entries (they're symlinks to Program Files apps)
+                    // We only want the real apps from Program Files\WindowsApps
+                    if (dir.contains(u"Local"_s, Qt::CaseInsensitive) && 
+                        dir.contains(u"AppData"_s, Qt::CaseInsensitive))
+                    {
+                        DEBG << QStringLiteral("Skipping LocalAppData symlink: '%1'").arg(path);
+                        continue;
+                    }
+                    
+                    // If this package has a manifest, only include executables registered in it
+                    // If no manifest exists, include the exe (it's a standalone app)
+                    QString packageDir = fi.dir().absolutePath();
+                    if (validExes.contains(packageDir))
+                    {
+                        QString exeName = fi.fileName();
+                        if (!validExes[packageDir].contains(exeName, Qt::CaseInsensitive))
+                        {
+                            DEBG << QStringLiteral("Skipping non-registered executable: '%1'").arg(path);
+                            continue;
+                        }
+                    }
+                    // If no manifest found, allow the exe through (apps without manifests are valid)
                 }
                 
                 // Get canonical path to detect duplicates (symlinks pointing to same file)

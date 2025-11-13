@@ -175,11 +175,91 @@ Application::Application(const QString &id, const QString &path, ParseOptions po
     description_ = description.isEmpty() ? targetPath : description;
 
     // Try to get an icon from the target executable
-    // Use canonical path for better icon extraction (especially for UWP apps)
+    // For UWP apps, use the .exe path directly (canonical path may not work)
     QString iconPath = targetPath.isEmpty() ? path : targetPath;
-    QFileInfo iconFi(iconPath);
-    QString canonicalIconPath = iconFi.canonicalFilePath();
-    icon_ = canonicalIconPath.isEmpty() ? iconPath : canonicalIconPath;
+    if (iconPath.contains(u"WindowsApps"_s, Qt::CaseInsensitive))
+    {
+        // For UWP apps, try to find logo images in the app directory
+        QFileInfo exeFi(iconPath);
+        QDir appDir = exeFi.dir();
+        
+        // Look for common UWP logo files (standard names)
+        QStringList logoFiles;
+        logoFiles << u"Assets/Square44x44Logo.png"_s 
+                  << u"Assets/Square150x150Logo.png"_s
+                  << u"Assets/StoreLogo.png"_s
+                  << u"Assets/AppIcon.png"_s;
+        
+        for (const QString &logoFile : logoFiles)
+        {
+            QString logoPath = appDir.absoluteFilePath(logoFile);
+            if (QFileInfo(logoPath).exists())
+            {
+                icon_ = logoPath;
+                break;
+            }
+        }
+        
+        // If no standard logo found, look for any PNG file in Assets directory
+        if (icon_.isEmpty())
+        {
+            QDir assetsDir = appDir.absoluteFilePath(u"Assets"_s);
+            if (assetsDir.exists())
+            {
+                // Prioritize icon types in order of preference
+                // Square44x44Logo is the app list icon (best for launcher)
+                // SmallTile and MedTile are Start menu tiles
+                QStringList iconPriority;
+                iconPriority << u"*Square44x44*"_s << u"*AppList*"_s 
+                            << u"*MedTile*"_s << u"*SmallTile*"_s 
+                            << u"*StoreLogo*"_s;
+                
+                for (const QString &pattern : iconPriority)
+                {
+                    QStringList pngFiles = assetsDir.entryList(QStringList() << pattern + u".png"_s, QDir::Files, QDir::Name);
+                    if (!pngFiles.isEmpty())
+                    {
+                        // Prefer non-contrast, non-altform versions (scale-100)
+                        for (const QString &file : pngFiles)
+                        {
+                            if (!file.contains(u"contrast"_s, Qt::CaseInsensitive) &&
+                                !file.contains(u"altform"_s, Qt::CaseInsensitive) &&
+                                file.contains(u"scale-100"_s, Qt::CaseInsensitive))
+                            {
+                                icon_ = assetsDir.absoluteFilePath(file);
+                                break;
+                            }
+                        }
+                        // If still not found, use first file from this pattern
+                        if (icon_.isEmpty())
+                        {
+                            for (const QString &file : pngFiles)
+                            {
+                                if (!file.contains(u"contrast"_s, Qt::CaseInsensitive))
+                                {
+                                    icon_ = assetsDir.absoluteFilePath(file);
+                                    break;
+                                }
+                            }
+                        }
+                        if (!icon_.isEmpty())
+                            break; // Found an icon, stop searching
+                    }
+                }
+            }
+        }
+        
+        // Fallback to exe if no logo found
+        if (icon_.isEmpty())
+            icon_ = iconPath;
+    }
+    else
+    {
+        // For regular apps, use canonical path for better icon extraction
+        QFileInfo iconFi(iconPath);
+        QString canonicalIconPath = iconFi.canonicalFilePath();
+        icon_ = canonicalIconPath.isEmpty() ? iconPath : canonicalIconPath;
+    }
 
     names_.removeDuplicates();
 }
@@ -188,7 +268,11 @@ QString Application::subtext() const { return description_; }
 
 unique_ptr<Icon> Application::icon() const
 {
-    // Use makeFileTypeIcon which handles Windows file icons properly
+    // For PNG files (UWP app icons), use makeImageIcon to load the image directly
+    if (icon_.endsWith(u".png"_s, Qt::CaseInsensitive))
+        return makeImageIcon(icon_);
+    
+    // For executables and other files, use makeFileTypeIcon
     // It uses QFileIconProvider internally which works well with Windows shortcuts and executables
     return makeFileTypeIcon(icon_);
 }
