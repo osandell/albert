@@ -33,8 +33,10 @@ static QStringList appDirectories()
     if (SUCCEEDED(SHGetFolderPathW(NULL, CSIDL_PROGRAMS, NULL, 0, path)))
         dirs << QString::fromWCharArray(path);
 
-    // Also scan WindowsApps directory for UWP/Store apps
-    // WindowsApps is typically in %LOCALAPPDATA%\Microsoft\WindowsApps
+    // Also scan WindowsApps directories for UWP/Store apps
+    // WindowsApps can be in:
+    // 1. %LOCALAPPDATA%\Microsoft\WindowsApps (user-specific apps)
+    // 2. %ProgramFiles%\WindowsApps (system-wide apps like Calculator)
     QString localAppData = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation);
     // QStandardPaths::GenericDataLocation returns AppData\Local on Windows
     QString windowsAppsPath = QDir(localAppData).absoluteFilePath(u"Microsoft/WindowsApps"_s);
@@ -42,6 +44,22 @@ static QStringList appDirectories()
     {
         dirs << windowsAppsPath;
         DEBG << "Added WindowsApps directory:" << windowsAppsPath;
+    }
+    
+    // Also check Program Files WindowsApps (system-wide UWP apps)
+    QString programFilesWindowsApps = u"C:/Program Files/WindowsApps"_s;
+    if (QDir(programFilesWindowsApps).exists())
+    {
+        dirs << programFilesWindowsApps;
+        DEBG << "Added Program Files WindowsApps directory:" << programFilesWindowsApps;
+    }
+    
+    // Also try Program Files (x86) for 32-bit apps
+    QString programFilesX86WindowsApps = u"C:/Program Files (x86)/WindowsApps"_s;
+    if (QDir(programFilesX86WindowsApps).exists())
+    {
+        dirs << programFilesX86WindowsApps;
+        DEBG << "Added Program Files (x86) WindowsApps directory:" << programFilesX86WindowsApps;
     }
 
     return dirs;

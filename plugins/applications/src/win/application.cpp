@@ -5,10 +5,13 @@
 #include <utility>
 #include <QDir>
 #include <QFileInfo>
+#include <QFile>
 #include <QSettings>
 #include <QPixmap>
 #include <QIcon>
 #include <QImage>
+#include <QRegularExpression>
+#include <QIODevice>
 #include <albert/iconutil.h>
 #include <albert/systemutil.h>
 #include <Windows.h>
@@ -19,6 +22,8 @@
 #include <comip.h>
 #include <propkey.h>
 #include <propvarutil.h>
+#include <shellapi.h>
+#include <shobjidl.h>
 using namespace Qt::StringLiterals;
 using namespace albert::detail;
 using namespace albert::util;
@@ -215,6 +220,96 @@ void Application::launchExec(const QStringList &exec, QUrl url, const QString &w
     {
         // Use QProcess or Windows API to launch the shortcut
         runDetachedProcess(QStringList() << u"cmd.exe"_s << u"/c"_s << u"start"_s << u""_s << path_, working_dir);
+    }
+    else if (path_.contains(u"WindowsApps"_s, Qt::CaseInsensitive))
+    {
+        // UWP apps cannot be launched directly via their .exe - use IApplicationActivationManager
+        // Extract Package Family Name and Application Id from the directory structure
+        QFileInfo exeInfo(path_);
+        QDir appDir = exeInfo.dir();
+        QString dirName = appDir.dirName();
+        
+        // Package Family Name format: PackageName_PublisherIdHash
+        // Directory format: PackageName_Version_Arch_PublisherIdHash
+        // Extract first and last components
+        QString packageFamilyName;
+        QRegularExpression pfnRegex(uR"(^([^_]+)_.*_([^_]+)$)"_s);
+        QRegularExpressionMatch pfnMatch = pfnRegex.match(dirName);
+        if (pfnMatch.hasMatch())
+        {
+            QString packageName = pfnMatch.captured(1);
+            QString publisherId = pfnMatch.captured(2);
+            packageFamilyName = packageName + u"_"_s + publisherId;
+        }
+        
+        QString aumid;
+        QString manifestPath = appDir.absoluteFilePath(u"AppxManifest.xml"_s);
+        if (!packageFamilyName.isEmpty() && QFileInfo(manifestPath).exists())
+        {
+            // Try to read the manifest and extract Application Id
+            QFile manifestFile(manifestPath);
+            if (manifestFile.open(QIODevice::ReadOnly | QIODevice::Text))
+            {
+                QByteArray data = manifestFile.readAll();
+                QString content = QString::fromUtf8(data);
+                
+                // Extract Application Id from manifest
+                QRegularExpression appIdRegex(uR"(<Application[^>]*Id=["']([^"']*)["'])"_s);
+                QRegularExpressionMatch appIdMatch = appIdRegex.match(content);
+                
+                QString appId;
+                if (appIdMatch.hasMatch())
+                    appId = appIdMatch.captured(1);
+                
+                // AUMID format: PackageFamilyName!AppId
+                aumid = packageFamilyName + u"!"_s + appId;
+            }
+        }
+        
+        if (!aumid.isEmpty())
+        {
+            // Try using IApplicationActivationManager first
+            HRESULT comInit = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+            bool needsUninit = (comInit == S_OK);
+            
+            IApplicationActivationManager* pActivationManager = nullptr;
+            HRESULT hr = CoCreateInstance(CLSID_ApplicationActivationManager, NULL, CLSCTX_INPROC_SERVER,
+                                         IID_IApplicationActivationManager, (LPVOID*)&pActivationManager);
+            
+            if (SUCCEEDED(hr) && pActivationManager)
+            {
+                DWORD pid = 0;
+                std::wstring waumid = aumid.toStdWString();
+                hr = pActivationManager->ActivateApplication(waumid.c_str(), NULL, AO_NONE, &pid);
+                pActivationManager->Release();
+                
+                if (SUCCEEDED(hr))
+                {
+                    if (needsUninit)
+                        CoUninitialize();
+                    return;
+                }
+            }
+            
+            if (needsUninit)
+                CoUninitialize();
+            
+            // Fallback: use shell:AppsFolder protocol
+            QString protocolUrl = u"shell:AppsFolder\\"_s + aumid;
+            std::wstring wurl = protocolUrl.toStdWString();
+            HINSTANCE result = ShellExecuteW(NULL, L"open", wurl.c_str(), NULL, NULL, SW_SHOWNORMAL);
+            if (reinterpret_cast<intptr_t>(result) > 32)
+            {
+                return; // Successfully launched via protocol
+            }
+        }
+        
+        // Fallback: use start command with proper path handling
+        // Convert forward slashes to backslashes for Windows
+        QString winPath = path_;
+        winPath.replace(u'/', u'\\');
+        // Use start command - the empty string is required for window title
+        runDetachedProcess(QStringList() << u"cmd.exe"_s << u"/c"_s << u"start"_s << u""_s << winPath, QString());
     }
     else
     {
