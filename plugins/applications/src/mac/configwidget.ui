@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ConfigWidget</class>
+ <widget class="QWidget" name="ConfigWidget">
+  <layout class="QFormLayout" name="formLayout"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

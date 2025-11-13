@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file alias="python">resources/python.svg</file>
+        <file alias="albert.pyi">albert.pyi</file>
+    </qresource>
+</RCC>

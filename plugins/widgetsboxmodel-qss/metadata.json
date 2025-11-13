@@ -1,0 +1,10 @@
+{
+    "authors": ["@manuelschneid3r"],
+    "description": "Qt Widgets based frontend",
+    "description[de]": "Qt Widgets basierte Benutzeroberfläche",
+    "license": "ALL",
+    "loadtype": "frontend",
+    "name": "Widgets BoxModel QSS",
+    "url": "https://github.com/albertlauncher/albert-plugin-widgetsboxmodel-qss",
+    "readme_url": "https://github.com/albertlauncher/albert-plugin-widgetsboxmodel-qss/blob/main/README.md"
+}

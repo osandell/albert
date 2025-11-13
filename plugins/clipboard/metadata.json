@@ -1,0 +1,10 @@
+{
+    "authors": ["@manuelschneid3r"],
+    "description": "Clipboard history",
+    "description[de]": "Zwischenablageverlauf",
+    "license": "MIT",
+    "maintainers": ["@manuelschneid3r"],
+    "name": "Clipboard",
+    "name[de]": "Zwischenablage",
+    "url": "https://github.com/albertlauncher/albert-plugin-clipboard"
+}

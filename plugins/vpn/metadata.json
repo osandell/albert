@@ -1,0 +1,12 @@
+{
+    "authors": ["@manuelschneid3r"],
+    "credits" : "Flatwoken Icon (CC BY-SA 4.0 DEED) by Alessandro Roncone",
+    "description": "VPN connections",
+    "description[de]": "VPN-Verbindungen",
+    "license": "MIT",
+    "maintainers": ["@manuelschneid3r"],
+    "name": "VPN",
+    "name[de]": "VPN",
+    "url": "https://github.com/albertlauncher/albert-plugin-vpn",
+    "readme_url": "https://github.com/albertlauncher/albert-plugin-vpn/blob/main/README.md"
+}

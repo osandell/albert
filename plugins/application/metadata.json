@@ -1,0 +1,10 @@
+{
+    "authors": ["@manuelschneid3r"],
+    "description": "Control the app",
+    "license": "MIT",
+    "maintainers": ["@manuelschneid3r"],
+    "name": "Albert",
+    "plugin_dependencies": ["applications"],
+    "url": "https://github.com/albertlauncher/albert-plugin-application",
+    "readme_url": "https://github.com/albertlauncher/albert-plugin-application/blob/main/README.md"
+}

@@ -1,0 +1,11 @@
+{
+    "authors": ["@manuelschneid3r"],
+    "description": "File search",
+    "description[de]": "Dateisuche",
+    "license": "ALL",
+    "maintainers": ["@manuelschneid3r"],
+    "name": "Files",
+    "name[de]": "Dateien",
+    "plugin_dependencies": ["applications"],
+    "url": "https://github.com/albertlauncher/albert-plugin-files"
+}

@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/icons/fallback/scalable">
+        <file>system-lock-screen.svg</file>
+        <file>system-log-out.svg</file>
+        <file>system-reboot.svg</file>
+        <file>system-shutdown.svg</file>
+        <file>system-suspend-hibernate.svg</file>
+        <file>system-suspend.svg</file>
+    </qresource>
+</RCC>

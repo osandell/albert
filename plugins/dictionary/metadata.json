@@ -1,0 +1,10 @@
+{
+    "authors": ["@manuelschneid3r"],
+    "description": "Lookup definitions in the dictionary",
+    "description[de]": "Definitionen im Lexikon nachschlagen",
+    "license": "MIT",
+    "maintainers": ["@manuelschneid3r"],
+    "name": "Dictionary",
+    "name[de]": "Lexikon",
+    "url": "https://github.com/albertlauncher/albert-plugin-dictionary"
+}

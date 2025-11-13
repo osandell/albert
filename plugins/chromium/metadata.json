@@ -1,0 +1,9 @@
+{
+    "authors": ["@manuelschneid3r"],
+    "description": "Open Chromium based browser bookmarks",
+    "description[de]": "Öffne Lesezeichen Chromium-basierter Browser",
+    "license": "MIT",
+    "maintainers": ["@manuelschneid3r"],
+    "name": "Chromium",
+    "url": "https://github.com/albertlauncher/albert-plugin-chromium"
+}

@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file alias="bt-change">resources/bluetooth-state-change.svg</file>
+        <file alias="bt-active">resources/bluetooth-state-connected.svg</file>
+        <file alias="bt-inactive">resources/bluetooth-state-disconnected.svg</file>
+    </qresource>
+</RCC>

@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/icons/fallback/scalable">
+        <file>accessories-calculator.svg</file>
+    </qresource>
+</RCC>

@@ -1,0 +1,11 @@
+{
+    "authors": ["@manuelschneid3r"],
+    "credits": "libarchive BSD-3-clause, Zeal/Dash for docfiles and endpoints",
+    "description": "Offline documentation",
+    "description[de]": "Offline-Dokumentation",
+    "license": "MIT",
+    "maintainers": ["@manuelschneid3r"],
+    "name": "Documentation",
+    "name[de]": "Dokumentation",
+    "url": "https://github.com/albertlauncher/albert-plugin-docs"
+}

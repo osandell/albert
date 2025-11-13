@@ -1,0 +1,10 @@
+{
+    "authors": ["@manuelschneid3r"],
+    "description": "Open URLs",
+    "description[de]": "URLs öffnen",
+    "license": "MIT",
+    "maintainers": ["@manuelschneid3r"],
+    "name": "URL Handler",
+    "name[de]": "URL-Handler",
+    "url": "https://github.com/albertlauncher/albert-plugin-urlhandler"
+}

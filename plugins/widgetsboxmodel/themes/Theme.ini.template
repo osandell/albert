@@ -1,0 +1,72 @@
+; The palette group is used to derive colors for general widget drawing.
+[palette]
+
+; Used mostly as the background color for text entry widgets, but can also be used for other
+; painting - such as the background of combobox drop down lists and toolbar handles. It is usually
+; white or another light color.
+base=
+
+; The foreground color used with Base. This is usually the same as the WindowText, in which case it
+; must provide good contrast with Window and Base.
+text=
+
+; A general background color.
+window=
+
+; A general foreground color.
+window_text=
+
+; The general button background color. This background can be different from Window as some styles
+; require a different background color for buttons.
+button=
+
+; A foreground color used with the Button color.
+button_text=
+
+; A color to indicate a selected item or the current item.
+highlight=
+
+; A text color that contrasts with Highlight.
+highlight_text=
+
+; Used as the placeholder color for various text input widgets.
+placeholder_text=
+
+; A text color used for unvisited hyperlinks.
+link=
+
+; A text color used for already visited hyperlinks.
+link_visited=
+
+; Lighter than Button color. Defaults to Button.lighter().
+;light=
+
+; Between Button and Dark. Defaults to Button.darker();
+;mid=
+
+; Darker than Button. Defaults to Mid.darker();
+;dark=
+
+
+; This group is used to explicitly overwrite the window colors.
+[window]
+
+;window_shadow_brush=#80000000
+;window_background_brush=$palette/window
+;window_border_brush=$palette/highlight
+;input_background_brush=$palette/base
+;input_border_brush=$palette/highlight
+;input_trigger_color=$palette/highlight
+;input_hint_color=$palette/placeholder_text
+;settings_button_color=$palette/button
+;settings_button_highlight_color=$palette/highlight
+;result_item_selection_background_brush=$palette/highlight
+;result_item_selection_border_brush=$palette/highlight
+;result_item_selection_text_color=$palette/highlight_text
+;result_item_selection_subtext_color=$palette/placeholder_text
+;result_item_text_color=$palette/window_text
+;result_item_subtext_color=$palette/placeholder_text
+;action_item_selection_background_brush=$palette/highlight
+;action_item_selection_border_brush=$palette/highlight
+;action_item_selection_text_color=$palette/highlight_text
+;action_item_text_color=$palette/

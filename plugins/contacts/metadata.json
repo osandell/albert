@@ -1,0 +1,10 @@
+{
+    "authors": ["@manuelschneid3r"],
+    "description": "Access your contacts",
+    "description[de]": "Zugriff auf Ihre Kontakte",
+    "license": "MIT",
+    "maintainers": ["@manuelschneid3r"],
+    "name": "Contacts",
+    "name[de]": "Kontakte",
+    "url": "https://github.com/albertlauncher/albert-plugin-contact_macos"
+}

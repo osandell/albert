@@ -1,0 +1,11 @@
+{
+    "authors": ["@manuelschneid3r"],
+    "credits": "qalculate GPL-2",
+    "description": "Evaluate math expressions",
+    "description[de]": "Werte mathematische Ausdrücke aus",
+    "license": "MIT",
+    "maintainers": ["@manuelschneid3r"],
+    "name": "Calculator",
+    "name[de]": "Rechner",
+    "url": "https://github.com/albertlauncher/albert-plugin-calculator_qalculate"
+}

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<node>
+
+    <interface name="org.freedesktop.DBus.ObjectManager">
+        <method name="GetManagedObjects">
+            <arg name="objects" type="a{oa{sa{sv}}}" direction="out"/>
+            <annotation name="org.qtproject.QtDBus.QtTypeName.Out0" value="ManagedObjects" />
+        </method>
+        <signal name="InterfacesAdded">
+            <arg name="object" type="o"/>
+            <arg name="interfaces" type="a{sa{sv}}"/>
+            <annotation name="org.qtproject.QtDBus.QtTypeName.Out1" value="NestedVariantMap" />
+        </signal>
+        <signal name="InterfacesRemoved">
+            <arg name="object" type="o"/>
+            <arg name="interfaces" type="as"/>
+        </signal>
+    </interface>
+
+    <interface name="org.freedesktop.DBus.Properties">
+        <signal name="PropertiesChanged">
+            <arg type="s" name="interface_name"/>
+            <arg type="a{sv}" name="changed_properties"/>
+            <arg type="as" name="invalidated_properties"/>
+            <annotation name="org.qtproject.QtDBus.QtTypeName.Out1" value="QVariantMap" />
+        </signal>
+    </interface>
+
+    <interface name="org.bluez.Adapter1">
+<!--
+        <method name="StartDiscovery"/>
+        <method name="StopDiscovery"/>
+        <method name="RemoveDevice">
+          <arg name="device" type="o" direction="in"/>
+        </method>
+-->
+        <property name="Address" type="s" access="read"/>
+        <property name="Name" type="s" access="read"/>
+        <property name="Alias" type="s" access="readwrite"/>
+<!--
+        <property name="Class" type="u" access="read">
+          <annotation name="org.qtproject.QtDBus.PropertyGetter" value="adapterClass"/>
+        </property>
+-->
+        <property name="Powered" type="b" access="readwrite"/>
+<!--
+        <property name="Discoverable" type="b" access="readwrite"/>
+        <property name="DiscoverableTimeout" type="u" access="readwrite"/>
+        <property name="Pairable" type="b" access="readwrite"/>
+        <property name="PairableTimeout" type="u" access="readwrite"/>
+        <property name="Discovering" type="b" access="read"/>
+        <property name="UUIDs" type="as" access="read"/>
+        <property name="Modalias" type="s" access="read"/>
+-->
+    </interface>
+
+
+
+    <interface name="org.bluez.Device1">
+        <method name="Disconnect"/>
+        <method name="Connect"/>
+<!--
+        <method name="ConnectProfile">
+            <arg name="UUID" type="s" direction="in"/>
+        </method>
+        <method name="DisconnectProfile">
+            <arg name="UUID" type="s" direction="in"/>
+        </method>
+        <method name="Pair"/>
+        <method name="CancelPairing"/>
+-->
+        <property name="Address" type="s" access="read"/>
+        <property name="Name" type="s" access="read"/>
+        <property name="Alias" type="s" access="readwrite"/>
+        <property name="Class" type="u" access="read">
+            <annotation name="org.qtproject.QtDBus.PropertyGetter" value="deviceClass"/>
+        </property>
+<!--
+        <property name="Appearance" type="q" access="read"/>
+-->
+        <property name="Icon" type="s" access="read"/>
+        <property name="Paired" type="b" access="read"/>
+<!--
+        <property name="Trusted" type="b" access="readwrite"/>
+        <property name="Blocked" type="b" access="readwrite"/>
+        <property name="LegacyPairing" type="b" access="read"/>
+        <property name="RSSI" type="n" access="read"/>
+-->
+        <property name="Connected" type="b" access="read"/>
+<!--
+        <property name="UUIDs" type="as" access="read"/>
+        <property name="Modalias" type="s" access="read"/>
+        -->
+        <property name="Adapter" type="o" access="read"/>
+    </interface>
+
+</node>
+
+
