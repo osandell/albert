@@ -7,9 +7,16 @@
 #include <albert/extension.h>
 class QWidget;
 
+// For plugin-internal classes, use the plugin's export macro
+#ifdef applications_EXPORTS
+#  define APPLICATIONS_EXPORT __declspec(dllexport)
+#else
+#  define APPLICATIONS_EXPORT
+#endif
+
 namespace applications {
 
-class ALBERT_EXPORT Application
+class APPLICATIONS_EXPORT Application
 {
 public:
 
@@ -51,7 +58,7 @@ protected:
 };
 
 
-class ALBERT_EXPORT Plugin : virtual public albert::Extension
+class APPLICATIONS_EXPORT Plugin : virtual public albert::Extension
 {
 public:
 

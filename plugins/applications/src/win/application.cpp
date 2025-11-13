@@ -11,7 +11,6 @@
 #include <QImage>
 #include <albert/iconutil.h>
 #include <albert/systemutil.h>
-#include <albert/icons.h>
 #include <Windows.h>
 #include <ShlObj.h>
 #include <shlwapi.h>
@@ -184,60 +183,9 @@ QString Application::subtext() const { return description_; }
 
 unique_ptr<Icon> Application::icon() const
 {
-    // For UWP apps and Windows executables, use Windows Shell API for better icon extraction
-    QIcon winIcon;
-    
-    if (!icon_.isEmpty())
-    {
-        // Use SHGetFileInfo to extract icon from executable/shortcut
-        SHFILEINFOW sfi = {0};
-        std::wstring wpath = icon_.toStdWString();
-        DWORD_PTR result = SHGetFileInfoW(wpath.c_str(), 0, &sfi, sizeof(sfi), 
-                                          SHGFI_ICON | SHGFI_LARGEICON | SHGFI_USEFILEATTRIBUTES);
-        
-        if (result && sfi.hIcon)
-        {
-            // Convert HICON to QPixmap by drawing to a bitmap
-            const int iconSize = 32; // Standard icon size
-            HDC hdc = CreateCompatibleDC(NULL);
-            HDC hdcMem = CreateCompatibleDC(hdc);
-            HBITMAP hbmp = CreateCompatibleBitmap(hdc, iconSize, iconSize);
-            HGDIOBJ oldBmp = SelectObject(hdcMem, hbmp);
-            
-            // Draw icon to bitmap
-            DrawIconEx(hdcMem, 0, 0, sfi.hIcon, iconSize, iconSize, 0, NULL, DI_NORMAL);
-            
-            // Get bitmap bits
-            BITMAPINFO bmi = {0};
-            bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-            bmi.bmiHeader.biWidth = iconSize;
-            bmi.bmiHeader.biHeight = -iconSize; // Negative for top-down
-            bmi.bmiHeader.biPlanes = 1;
-            bmi.bmiHeader.biBitCount = 32;
-            bmi.bmiHeader.biCompression = BI_RGB;
-            
-            QImage img(iconSize, iconSize, QImage::Format_ARGB32);
-            GetDIBits(hdcMem, hbmp, 0, iconSize, img.bits(), &bmi, DIB_RGB_COLORS);
-            
-            // Cleanup
-            SelectObject(hdcMem, oldBmp);
-            DeleteObject(hbmp);
-            DeleteDC(hdcMem);
-            DeleteDC(hdc);
-            DestroyIcon(sfi.hIcon);
-            
-            winIcon = QIcon(QPixmap::fromImage(img));
-        }
-    }
-    
-    // Fallback to QFileIconProvider if Shell API failed
-    if (winIcon.isNull())
-    {
-        return makeFileTypeIcon(icon_);
-    }
-    
-    // Return QIconIcon wrapper
-    return make_unique<QIconIcon>(winIcon);
+    // Use makeFileTypeIcon which handles Windows file icons properly
+    // It uses QFileIconProvider internally which works well with Windows shortcuts and executables
+    return makeFileTypeIcon(icon_);
 }
 
 vector<Action> Application::actions() const
