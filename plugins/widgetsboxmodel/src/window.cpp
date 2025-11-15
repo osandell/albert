@@ -912,9 +912,9 @@ void Window::onMatchActivation(const QModelIndex &index)
         if (auto should_hide = current_query->activateMatch(index.row(), 0);
             should_hide != QGuiApplication::queryKeyboardModifiers().testFlag(Qt::ShiftModifier))  // xor
             {
-                // Clear input with delay before hiding
+                // Clear input before hiding to prevent old results from flashing
                 input_line->clear();
-                QTimer::singleShot(1000, this, [this]{ hide(); });
+                QTimer::singleShot(100, this, [this]{ hide(); });
             }
 }
 
@@ -924,9 +924,9 @@ void Window::onMatchActionActivation(const QModelIndex &index)
         if (auto should_hide = current_query->activateMatch(results_list->currentIndex().row(), index.row());
             should_hide != QGuiApplication::queryKeyboardModifiers().testFlag(Qt::ShiftModifier))  // xor
             {
-                // Clear input with delay before hiding
+                // Clear input before hiding to prevent old results from flashing
                 input_line->clear();
-                QTimer::singleShot(1000, this, [this]{ hide(); });
+                QTimer::singleShot(100, this, [this]{ hide(); });
             }
 }
 
@@ -936,9 +936,9 @@ void Window::onFallbackActivation(const QModelIndex &index)
         if (auto should_hide = current_query->activateFallback(index.row(), 0);
             should_hide != QGuiApplication::queryKeyboardModifiers().testFlag(Qt::ShiftModifier))  // xor
             {
-                // Clear input with delay before hiding
+                // Clear input before hiding to prevent old results from flashing
                 input_line->clear();
-                QTimer::singleShot(1000, this, [this]{ hide(); });
+                QTimer::singleShot(100, this, [this]{ hide(); });
             }
 }
 
@@ -948,9 +948,9 @@ void Window::onFallbackActionActivation(const QModelIndex &index)
         if (auto should_hide = current_query->activateFallback(results_list->currentIndex().row(), index.row());
             should_hide != QGuiApplication::queryKeyboardModifiers().testFlag(Qt::ShiftModifier))  // xor
             {
-                // Clear input with delay before hiding
+                // Clear input before hiding to prevent old results from flashing
                 input_line->clear();
-                QTimer::singleShot(1000, this, [this]{ hide(); });
+                QTimer::singleShot(100, this, [this]{ hide(); });
             }
 }
 
@@ -1060,16 +1060,9 @@ bool Window::event(QEvent *event)
                 setEditModeEnabled(false);
             else
             {
-                // DEBUG: Clear input when ESC is pressed
-                input_line->setPlainText(QStringLiteral("ESC PRESSED - CLEARING!!!"));
-                QTimer::singleShot(1000, this, [this]{
-                    // Clear the message
-                    input_line->clear();
-                    // Wait another second so we can see it's cleared
-                    QTimer::singleShot(1000, this, [this]{
-                        setVisible(false);
-                    });
-                });
+                // Clear input before hiding to prevent old results from flashing
+                input_line->clear();
+                QTimer::singleShot(100, this, [this]{ setVisible(false); });
             }
             break;
         }
