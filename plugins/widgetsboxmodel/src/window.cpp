@@ -914,7 +914,7 @@ void Window::onMatchActivation(const QModelIndex &index)
             {
                 // Clear input before hiding to prevent old results from flashing
                 input_line->clear();
-                QTimer::singleShot(100, this, [this]{ hide(); });
+                QTimer::singleShot(10, this, [this]{ hide(); });
             }
 }
 
@@ -926,7 +926,7 @@ void Window::onMatchActionActivation(const QModelIndex &index)
             {
                 // Clear input before hiding to prevent old results from flashing
                 input_line->clear();
-                QTimer::singleShot(100, this, [this]{ hide(); });
+                QTimer::singleShot(10, this, [this]{ hide(); });
             }
 }
 
@@ -938,7 +938,7 @@ void Window::onFallbackActivation(const QModelIndex &index)
             {
                 // Clear input before hiding to prevent old results from flashing
                 input_line->clear();
-                QTimer::singleShot(100, this, [this]{ hide(); });
+                QTimer::singleShot(10, this, [this]{ hide(); });
             }
 }
 
@@ -950,7 +950,7 @@ void Window::onFallbackActionActivation(const QModelIndex &index)
             {
                 // Clear input before hiding to prevent old results from flashing
                 input_line->clear();
-                QTimer::singleShot(100, this, [this]{ hide(); });
+                QTimer::singleShot(10, this, [this]{ hide(); });
             }
 }
 
@@ -1062,7 +1062,7 @@ bool Window::event(QEvent *event)
             {
                 // Clear input before hiding to prevent old results from flashing
                 input_line->clear();
-                QTimer::singleShot(100, this, [this]{ setVisible(false); });
+                QTimer::singleShot(10, this, [this]{ setVisible(false); });
             }
             break;
         }
